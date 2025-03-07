@@ -1,1 +1,14 @@
 {% extends "layout.html" %}
+
+{% block title %}
+    Main Page
+{% endblock %}
+
+{% block content %}
+    <h1 class="title">Welcome to the Japan Travel Survery</h1>
+    <div class="center">
+        <p>Have you wanted to go to Japan but don't know where to travel?</p>
+        <p>Well, look no further, take this survery and find your perfect Japan destination!</p>
+        <a href="{{ url_for('survey') }}" class="button">Start the Survey</a>
+    </div>
+{% endblock %}

@@ -3,11 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Japan Travel Quiz</title>
+    <title>{% block title %}Japan Travel Quiz{% endblock %}</title>
+    <link href="/static/style.css" rel="stylesheet">
 </head>
 <body>
-    {% block body %}
 
-    {% endblock %}
+    <main>
+        {% block content %}{% endblock %}
+    </main>
+
+    <footer>
+        <p>&copy; 2025 Japan Travel Quiz</p>
+    </footer>
 </body>
 </html>
