@@ -126,19 +126,28 @@ def results():
 
 @app.route('/destination/<name>')
 def destination_details(name):
-    conn = sqlite3.connect('questions.db')
-    cursor = conn.cursor()
+    destination_templates = {
+        "Tokyo": "destination_tokyo.html",
+        "Kyoto": "destination_kyoto.html",
+        "Osaka": "destination_osaka.html",
+        "Hokkaido": "destination_hokkaido.html",
+        "Sapporo": "destination_sapporo.html",
+        "Hiroshima": "destination_hiroshima.html",
+        "Fukuoka": "destination_fukuoka.html",
+        "Nara": "destination_nara.html",
+        "Hakone": "destination_hakone.html",
+        "Kanazawa": "destination_kanazawa.html",
+        "Shikoku": "destination_shikoku.html", 
+        "Okinawa": "destination_okinawa.html"   
 
-    # Get destination details from the database
-    cursor.execute("SELECT name, description FROM destinations WHERE name = ?", (name,))
-    destination = cursor.fetchone()
+    }
 
-    conn.close()
-
-    if not destination:
+    if name in destination_templates:
+        return render_template(destination_templates[name])
+    else:
         return "Destination not found", 404
 
-    return render_template("destination.html", destination=destination)
+
 
 
 

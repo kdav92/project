@@ -3,47 +3,51 @@
 {% block title %}Results{% endblock %}
 
 {% block content %}
-    <h1>Your Best Japan Destinations</h1>
+    <h1>Your Japan Destinations</h1>
     <p>Based on your answers, here are your recommended places to visit:</p>
 
     {% if top_recommendations %}
         <h2>Your Top Recommendations:</h2>
-        <ul>
+        <div class="destination-list">
         {% for destination, score in top_recommendations %}
-            <li>
+            <div class="destination-card">
                 <a href="{{ url_for('destination_details', name=destination) }}">
-                    {{ destination }} (Matched {{ score }} times)
+                    <img src="{{ url_for('static', filename='images/' + destination.lower() + '.jpg') }}" alt="{{ destination }}">
+                    <h3>{{ destination }}</h3>
                 </a>
-            </li>
+            </div>
         {% endfor %}
-        </ul>
+        </div>
     {% endif %}
 
     {% if good_matches %}
         <h2>You Might Also Like:</h2>
-        <ul>
+        <div class="destination-list">
         {% for destination, score in good_matches %}
-            <li>
+            <div class="destination-card">
                 <a href="{{ url_for('destination_details', name=destination) }}">
-                    {{ destination }} (Matched {{ score }} times)
+                    <img src="{{ url_for('static', filename='images/' + destination.lower() + '.jpg') }}" alt="{{ destination }}">
+                    <h3>{{ destination }}</h3>
                 </a>
-            </li>
+            </div>
         {% endfor %}
-        </ul>
+        </div>
     {% endif %}
 
     {% if consider_visiting %}
-        <h2>Check Out Other Places:</h2>
-        <ul>
+        <h2>Check Out Theses Other Places:</h2>
+        <div class="destination-list">
         {% for destination, score in consider_visiting %}
-            <li>
+            <div class="destination-card">
                 <a href="{{ url_for('destination_details', name=destination) }}">
-                    {{ destination }} (Matched {{ score }} times)
+                    <img src="{{ url_for('static', filename='images/' + destination.lower() + '.jpg') }}" alt="{{ destination }}">
+                    <h3>{{ destination }}</h3>
                 </a>
-            </li>
+            </div>
         {% endfor %}
-        </ul>
+        </div>
     {% endif %}
+
 {% endblock %}
 
 
