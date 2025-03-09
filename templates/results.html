@@ -1,16 +1,47 @@
 {% extends "layout.html" %}
 
-{% block title %}
-    Results
-{% endblock %}
+{% block title %}Results{% endblock %}
 
 {% block content %}
-    <h1>Your Perfect Destination</h1>
+    <h1>Your Best Japan Destinations</h1>
+    <p>Based on your answers, here are your recommended places to visit:</p>
 
-    <h2>Top Picks:</h2>
-    <h2>Second Picks:</h2>
-    <h2>You might also like:</h2>
+    {% if top_recommendations %}
+        <h2>Your Top Recommendations:</h2>
+        <ul>
+        {% for destination, score in top_recommendations %}
+            <li>
+                <a href="{{ url_for('destination_details', name=destination) }}">
+                    {{ destination }} (Matched {{ score }} times)
+                </a>
+            </li>
+        {% endfor %}
+        </ul>
+    {% endif %}
 
-    <h3>Thank you for taking this survey!</h3>
-    <button type="submit"><a href="{{ url_for('index') }}" class="button">Retake Survey</a></button>
+    {% if good_matches %}
+        <h2>You Might Also Like:</h2>
+        <ul>
+        {% for destination, score in good_matches %}
+            <li>
+                <a href="{{ url_for('destination_details', name=destination) }}">
+                    {{ destination }} (Matched {{ score }} times)
+                </a>
+            </li>
+        {% endfor %}
+        </ul>
+    {% endif %}
+
+    {% if consider_visiting %}
+        <h2>Check Out Other Places:</h2>
+        <ul>
+        {% for destination, score in consider_visiting %}
+            <li>
+                <a href="{{ url_for('destination_details', name=destination) }}">
+                    {{ destination }} (Matched {{ score }} times)
+                </a>
+            </li>
+        {% endfor %}
+        </ul>
+    {% endif %}
 {% endblock %}
