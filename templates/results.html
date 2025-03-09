@@ -11,7 +11,7 @@
         <div class="destination-list">
         {% for destination, score in top_recommendations %}
             <div class="destination-card">
-                <a href="{{ url_for('destination_details', name=destination) }}">
+                <a href="{{ url_for('destination_details', name=destination) }}" target="_blank">
                     <img src="{{ url_for('static', filename='images/' + destination.lower() + '.jpg') }}" alt="{{ destination }}">
                     <h3>{{ destination }}</h3>
                 </a>
@@ -25,7 +25,7 @@
         <div class="destination-list">
         {% for destination, score in good_matches %}
             <div class="destination-card">
-                <a href="{{ url_for('destination_details', name=destination) }}">
+                <a href="{{ url_for('destination_details', name=destination) }}" target="_blank">
                     <img src="{{ url_for('static', filename='images/' + destination.lower() + '.jpg') }}" alt="{{ destination }}">
                     <h3>{{ destination }}</h3>
                 </a>
@@ -39,7 +39,7 @@
         <div class="destination-list">
         {% for destination, score in consider_visiting %}
             <div class="destination-card">
-                <a href="{{ url_for('destination_details', name=destination) }}">
+                <a href="{{ url_for('destination_details', name=destination) }}" target="_blank">
                     <img src="{{ url_for('static', filename='images/' + destination.lower() + '.jpg') }}" alt="{{ destination }}">
                     <h3>{{ destination }}</h3>
                 </a>
@@ -47,6 +47,9 @@
         {% endfor %}
         </div>
     {% endif %}
+
+        
+        <button type="submit"><a href="{{ url_for('index') }}" class="button">Retake Survey</a></button>
 
 {% endblock %}
 
