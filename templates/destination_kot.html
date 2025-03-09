@@ -1,0 +1,22 @@
+{% extends "layout.html" %} {% block title %}Kyoto{% endblock %} {% block
+content %}
+<div class="destination-page">
+  <h1>Kyoto</h1>
+  <img src="{{ url_for('static', filename='images/kyoto.jpg') }}" alt="Kyoto" />
+  <p>
+    Kyoto is the heart of Japan’s traditional culture, with over 1,000 shrines
+    and temples.
+  </p>
+
+  <h2>Top Activities in Kyoto</h2>
+  <ul>
+    <li>Walk through the Fushimi Inari Shrine's iconic torii gates</li>
+    <li>Visit the stunning Golden Pavilion (Kinkaku-ji)</li>
+    <li>Explore the bamboo forest in Arashiyama</li>
+    <li>Experience a traditional tea ceremony</li>
+    <li>See geishas in Gion</li>
+  </ul>
+
+  <a href="{{ url_for('results') }}">Back to Results</a>
+</div>
+{% endblock %}
