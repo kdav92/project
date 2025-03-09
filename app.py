@@ -16,10 +16,10 @@ def survey():
     return render_template("survey.html")
 
 
-@app.route("/sumbit", methods=["GET", "POST"])
+@app.route("/submit", methods=["POST"])
 def submit():
     try:
-
+        # Get user responses from the form
         q1 = request.form.get('q1')
         q2 = request.form.get('q2')
         q3 = request.form.get('q3')
@@ -32,30 +32,32 @@ def submit():
         if not q1 or not q2 or not q3 or not q4 or not q5 or not q6 or not q7 or not q8:
             return "Error: All questions must be answered.", 400
 
-        with conn = sqlite3.connect('questions.db') as conn:
+        # Use `with` block to handle database connection properly
+        with sqlite3.connect('questions.db') as conn:
             cursor = conn.cursor()
 
-            cursor.execute("INSERT INTO user_responses (question_id, answer_id) VALUES (?, ?)", (1, q1))
-            user_id = cursor.lastrowid
+            # Insert a user record without providing user_id (it will be generated automatically)
+            cursor.execute("INSERT INTO users DEFAULT VALUES")
+            user_id = cursor.lastrowid  # Get the last generated user_id
 
-            
-            cursor.execute("INSERT INTO user_responses (question_id, answer_id) VALUES (?, ?)", (2, q2))
-            cursor.execute("INSERT INTO user_responses (question_id, answer_id) VALUES (?, ?)", (3, q3))
-            cursor.execute("INSERT INTO user_responses (question_id, answer_id) VALUES (?, ?)", (4, q4))
-            cursor.execute("INSERT INTO user_responses (question_id, answer_id) VALUES (?, ?)", (5, q5))
-            cursor.execute("INSERT INTO user_responses (question_id, answer_id) VALUES (?, ?)", (6, q6))
-            cursor.execute("INSERT INTO user_responses (question_id, answer_id) VALUES (?, ?)", (7, q7))
-            cursor.execute("INSERT INTO user_responses (question_id, answer_id) VALUES (?, ?)", (8, q8))
-            
-            user_id = cursor.lastrowid
+            # Insert the user's answers into the `user_responses` table, using the generated user_id
+            cursor.execute("INSERT INTO user_responses (user_id, question_id, answer_id) VALUES (?, ?, ?)", (user_id, 1, q1))
+            cursor.execute("INSERT INTO user_responses (user_id, question_id, answer_id) VALUES (?, ?, ?)", (user_id, 2, q2))
+            cursor.execute("INSERT INTO user_responses (user_id, question_id, answer_id) VALUES (?, ?, ?)", (user_id, 3, q3))
+            cursor.execute("INSERT INTO user_responses (user_id, question_id, answer_id) VALUES (?, ?, ?)", (user_id, 4, q4))
+            cursor.execute("INSERT INTO user_responses (user_id, question_id, answer_id) VALUES (?, ?, ?)", (user_id, 5, q5))
+            cursor.execute("INSERT INTO user_responses (user_id, question_id, answer_id) VALUES (?, ?, ?)", (user_id, 6, q6))
+            cursor.execute("INSERT INTO user_responses (user_id, question_id, answer_id) VALUES (?, ?, ?)", (user_id, 7, q7))
+            cursor.execute("INSERT INTO user_responses (user_id, question_id, answer_id) VALUES (?, ?, ?)", (user_id, 8, q8))
 
             conn.commit()
-            
 
+        # Redirect the user to the results page with their user_id
         return redirect(url_for('results', user_id=user_id))
-    
+
     except Exception as e:
         return f"An error occurred: {str(e)}", 500
+
 
 
 @app.route('/results')
@@ -66,33 +68,77 @@ def results():
     conn = sqlite3.connect('questions.db')
     cursor = conn.cursor()
 
-    # Get the user's answers from the `user_responses` table
-    cursor.execute("SELECT answer_id FROM user_responses WHERE id = ?", (user_id,))
-    user_answers = [row[0] for row in cursor.fetchall()]
+    # Get user's answers (currently stored as answer_text, convert to answer_id)
+    cursor.execute("SELECT answer_id FROM user_responses WHERE user_id = ?", (user_id,))
+    user_answer_texts = [row[0] for row in cursor.fetchall()]  # These are still answer_text, need conversion
 
-    # Find all matching destinations and count occurrences
-    cursor.execute("""
-        SELECT d.name, COUNT(*) AS score 
-        FROM recommendations r
-        JOIN destinations d ON r.destination_id = d.id
-        WHERE r.answer_id IN ({})
-        GROUP BY d.name
-        ORDER BY score DESC
-    """.format(','.join(['?']*len(user_answers))), tuple(user_answers))
+    print("User selected answer TEXTS:", user_answer_texts)  # Debugging
 
-    all_destinations = cursor.fetchall()  # List of (destination, score)
+    if not user_answer_texts:
+        return "No answers found for this user. Please try again.", 400
 
-    # Close database connection
+    # 🔹 Convert answer_text to answer_id
+    placeholders = ', '.join(['?'] * len(user_answer_texts))  # Create placeholders for SQL query
+    cursor.execute(f"SELECT id FROM answers WHERE answer_text IN ({placeholders})", tuple(user_answer_texts))
+    user_answer_ids = [row[0] for row in cursor.fetchall()]  # Get a list of answer_id values
+
+    print("Converted answer IDs:", user_answer_ids)  # Debugging
+
+    if not user_answer_ids:
+        return "No matching answers found in the database.", 400
+
+    # 🔹 Query for matching destinations using answer_id
+    try:
+        placeholders = ', '.join(['?'] * len(user_answer_ids))  # Create placeholders again
+        cursor.execute(f"""
+            SELECT d.name, COUNT(*) AS score 
+            FROM recommendations r
+            JOIN destinations d ON r.destination_id = d.id
+            WHERE r.answer_id IN ({placeholders})
+            GROUP BY d.name
+            ORDER BY score DESC
+        """, tuple(user_answer_ids))
+
+        all_destinations = cursor.fetchall()  # List of (destination, score)
+
+        print("Matching Destinations:", all_destinations)  # Debugging
+
+    except Exception as e:
+        print("Error during query execution:", str(e))
+        return "An error occurred while fetching destinations.", 500
+
     conn.close()
 
-    # Categorize destinations into 3 groups
+    if not all_destinations:
+        return "No matching destinations found.", 400
+
+    # Categorize destinations
     top_recommendations = [d for d in all_destinations if d[1] >= 5]  # Score ≥ 5
     good_matches = [d for d in all_destinations if 3 <= d[1] <= 4]  # Score 3-4
     consider_visiting = [d for d in all_destinations if d[1] <= 2]  # Score ≤ 2
 
-    return render_template("results.html", top_recommendations=top_recommendations, good_matches=good_matches, consider_visiting=consider_visiting)
+    return render_template("results.html", 
+                           top_recommendations=top_recommendations, 
+                           good_matches=good_matches, 
+                           consider_visiting=consider_visiting)
 
 
+
+@app.route('/destination/<name>')
+def destination_details(name):
+    conn = sqlite3.connect('questions.db')
+    cursor = conn.cursor()
+
+    # Get destination details from the database
+    cursor.execute("SELECT name, description FROM destinations WHERE name = ?", (name,))
+    destination = cursor.fetchone()
+
+    conn.close()
+
+    if not destination:
+        return "Destination not found", 404
+
+    return render_template("destination.html", destination=destination)
 
 
 
