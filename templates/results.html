@@ -1,0 +1,16 @@
+{% extends "layout.html" %}
+
+{% block title %}
+    Results
+{% endblock %}
+
+{% block content %}
+    <h1>Your Perfect Destination</h1>
+
+    <h2>Top Picks:</h2>
+    <h2>Second Picks:</h2>
+    <h2>You might also like:</h2>
+
+    <h3>Thank you for taking this survey!</h3>
+    <button type="submit"><a href="{{ url_for('index') }}" class="button">Retake Survey</a></button>
+{% endblock %}
