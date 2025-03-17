@@ -34,3 +34,40 @@
     font-size: 18px;
     color: #333;
 }
+
+.quote {
+    font-size: 25px;
+    padding: 10px;
+    margin-top: 5px;
+    margin-bottom: 20px;
+    font-style: italic; 
+    text-align: center;  
+}
+
+.button {
+    margin-top: 25px;
+    padding: 8px 16px;
+    background-color: #3882F6;
+    color: white;
+    border-radius: 8px;
+}
+
+.button-container {
+    margin-top: 15px;
+    justify-content: center;
+}
+
+.destination-title {
+    font-size: 100px;
+    text-align: center;
+    padding: 0;
+}
+
+
+ul {
+    list-style-type: none;
+    display: flex;
+    gap: 16px;
+    margin: 0;
+    padding: 0;
+}
