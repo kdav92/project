@@ -3,8 +3,8 @@
 {% block title %}Results{% endblock %}
 
 {% block content %}
-    <h1>Your Japan Destinations</h1>
-    <p>Based on your answers, here are your recommended places to visit:</p>
+    <h1 class="destination-title">Your Japan Destinations</h1>
+   
 
     {% if top_recommendations %}
         <h2>Your Top Recommendations:</h2>
@@ -49,7 +49,7 @@
     {% endif %}
 
         <div class="button-container">
-        <button type="submit"><a href="{{ url_for('index') }}" class="button">Retake Survey</a></button>
+        <button class="button" type="submit"><a href="{{ url_for('index') }}">Retake Survey</a></button>
         </div>
 {% endblock %}
 
